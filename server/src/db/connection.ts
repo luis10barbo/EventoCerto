@@ -1,0 +1,47 @@
+// import { MongoClient } from "mongodb";
+// // Connection URI
+// const uri =
+//   "mongodb://localhost:27017/?writeConcern=majority";
+// // Create a new MongoClient
+// const client = new MongoClient(uri);
+// async function run() {
+//   try {
+//     // Connect the client to the server
+//     await client.connect();
+//     // Establish and verify connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Connected successfully to server");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
+
+// const db = client.db("EventoCerto");
+// export default db;
+
+import mongoose from "mongoose"
+mongoose.connect("mongodb://localhost:27017/EventoCerto?writeConcern=majority");
+const userSchemaTypeDefinition = {
+    nickname: String,
+    password: String,
+    picture: String,
+};
+const userSchema = new mongoose.Schema(userSchemaTypeDefinition)
+const eventSchema = new mongoose.Schema({
+    name: String,
+    limit: Number,
+    location: String,
+    timestamp: Date,
+    confirmedUsers: [userSchemaTypeDefinition],
+    askingToJoinUsers: [userSchemaTypeDefinition],
+    invitedUsers: [userSchemaTypeDefinition],
+    discussion: [
+        userSchemaTypeDefinition
+    ]
+})
+
+export const UserCol = mongoose.model("user", userSchema);
+export const EventCol = mongoose.model("event", eventSchema);
+
