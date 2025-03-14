@@ -37,9 +37,11 @@ const eventSchema = new mongoose.Schema({
     confirmedUsers: [userSchemaTypeDefinition],
     askingToJoinUsers: [userSchemaTypeDefinition],
     invitedUsers: [userSchemaTypeDefinition],
-    discussion: [
-        userSchemaTypeDefinition
-    ]
+    discussion: [{
+        userId: Number,
+        message: String,
+        timestamp: Date
+    }]
 })
 
 export const UserCol = mongoose.model("user", userSchema);
