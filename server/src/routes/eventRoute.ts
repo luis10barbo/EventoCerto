@@ -21,10 +21,26 @@ eventRouter.post("/", async (_, res) => {
 })
 
 eventRouter.get("/getRT/:id", async (req, res) => {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-    res.flushHeaders();
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    // Send an initial message
+    res.write(`data: Connected to server\n\n`);
+
+    // Simulate sending updates from the server
+    let counter = 0;
+    const intervalId = setInterval(() => {
+        counter++;
+        // Write the event stream format
+        res.write(`data: Message ${counter}\n\n`);
+    }, 2000);
+
+    // When client closes connection, stop sending events
+    req.on('close', () => {
+        clearInterval(intervalId);
+        res.end();
+    });
 })
 
 export default eventRouter;
