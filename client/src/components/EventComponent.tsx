@@ -1,13 +1,15 @@
+"use client";
 import { IoLocationSharp, IoRemoveSharp, IoSend, IoTimeSharp } from "react-icons/io5";
-import ButtonComponent from "./ButtonComponent"
-import InputComponent from "./InputComponent"
+import ButtonComponent from "./ButtonComponent";
+import InputComponent from "./InputComponent";
 import { ReactNode, useState } from "react";
+import { type EventType } from "@backend/model/event";
 
 type Message = {nickname: string, message: string, datetime: Date};
 
 function CardUser({nickname, children}: {nickname?: string, children?: ReactNode}) {
     const _nickname = nickname || children;
-    return <div className="w-full bg-white text-black h-12 px-2 py-2 rounded-sm text-base flex justify-between items-center">
+    return <div className="w-full bg-white hover:bg-neutral-100 cursor-pointer text-black h-12 px-2 py-2 rounded-sm text-base flex justify-between items-center">
         <div className="w-full h-full flex items-center gap-2">
             <div className="h-full aspect-square bg-neutral-300 rounded-full"></div>
             {_nickname} 
@@ -16,7 +18,7 @@ function CardUser({nickname, children}: {nickname?: string, children?: ReactNode
     </div>
 }
 
-export default function EventComponent() {
+export default function EventComponent({event}: {event: EventType}) {
     const organizers = ["Luis"];
     const confirmed = ["Luis", "Luis Maligno", "Chrian"];
     const [discussion, setDiscussion] = useState<Message[]>([
@@ -37,8 +39,8 @@ export default function EventComponent() {
 
     return <>
         <header id="event-header">
-            <span className='text-5xl'>Event Name</span>
-
+            <span className='text-5xl'>{event.name}</span>
+            {/* {JSON.stringify(event)} */}
             <div id="info-event" className='text-2xl font-light text-neutral-200 flex gap-16'>
                 <span id='organizers-event'>
                 Organized by <span className="text-indigo-300">{organizers.map((organizer, i) => {
@@ -50,11 +52,11 @@ export default function EventComponent() {
                 </span>
                 <span id='location-event' className="flex gap-1 items-center">
                 <IoLocationSharp className="text-base"/>
-                No location
+                {event.location ? event.location : <>No Location</>}
                 </span>
                 <span className="flex gap-1 items-center">
                     <IoTimeSharp/>
-                    0/0/0 00:00 - 00:00
+                    {event.timestamp ? new Date(event.timestamp).toLocaleString() : "No date set"}
                 </span>
             </div>
 
@@ -73,7 +75,7 @@ export default function EventComponent() {
                 <section className="flex-1">
                     <span className="">Invited</span>
                 </section>
-                <div id="discussions" className="bg-neutral-800 p-2 flex-1 min-w-[500px] rounded-xl h-full flex flex-col">
+                <div id="discussions" className="bg-neutral-800 p-4 flex-1 min-w-[500px] rounded-xl h-full flex flex-col">
                     {/* <span className="">Discussion</span> */}
                     <div id="messages-discussions" className="flex flex-col h-full overflow-auto gap-2 ">
                         {discussion.map((message, i) => {

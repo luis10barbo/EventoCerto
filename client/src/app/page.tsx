@@ -1,6 +1,5 @@
-import './App.css'
-import EventComponent from './components/EventComponent'
-import HeaderComponent from './components/HeaderComponent'
+import EventComponent from '@/components/EventComponent'
+import HeaderComponent from '@/components/HeaderComponent'
 
 function App() {
 
