@@ -1,8 +1,13 @@
+import { getEventRoom } from "@/controller/eventRoomController";
+import { EventCol, getEventById } from "@/db/collections/eventCollection";
+import { mapUserCollectionToUser } from "@/db/collections/userCollection";
+import { formatEventMessage } from "@/model/eventModel";
 import express from "express";
-
-import {EventCol} from "@/db/connection.js";
+import { FindOperators } from "mongodb";
 
 const eventRouter = express.Router();
+const openConnections = new Set();
+
 
 eventRouter.get("/get/:id", async (req, res) => {
     const eventId = req.params.id;
@@ -25,21 +30,25 @@ eventRouter.get("/getRT/:id", async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     
-    // Send an initial message
-    res.write(`data: Connected to server\n\n`);
+    const eventId = req.params.id;
+    if (!eventId) {
+        res.emit("close");
+        return;
+    }
+    const room = getEventRoom(eventId, res);
 
-    // Simulate sending updates from the server
-    let counter = 0;
-    const intervalId = setInterval(() => {
-        counter++;
-        // Write the event stream format
-        res.write(`data: Message ${counter}\n\n`);
-    }, 2000);
+    const event = await room.getEventInfo(eventId);
+    if (!event) {
+        res.emit("close");
+        return;
+    }
+    res.write(formatEventMessage({type: "info", id: event.id, askingToJoinUsers: event.askingToJoinUsers, confirmedUsers: event.confirmedUsers, discussion: event.discussion, invitedUsers: event.invitedUsers, limit: event.limit, location: event.location, name: event.name, timestamp: event.timestamp?.toString()}));
+    openConnections.add(res);
 
     // When client closes connection, stop sending events
     req.on('close', () => {
-        clearInterval(intervalId);
         res.end();
+        openConnections.delete(res);
     });
 })
 

@@ -22,28 +22,9 @@
 // export default db;
 
 import mongoose from "mongoose"
-mongoose.connect("mongodb://localhost:27017/EventoCerto?writeConcern=majority");
-const userSchemaTypeDefinition = {
-    nickname: String,
-    password: String,
-    picture: String,
-};
-const userSchema = new mongoose.Schema(userSchemaTypeDefinition)
-const eventSchema = new mongoose.Schema({
-    name: String,
-    limit: Number,
-    location: String,
-    timestamp: Date,
-    confirmedUsers: [userSchemaTypeDefinition],
-    askingToJoinUsers: [userSchemaTypeDefinition],
-    invitedUsers: [userSchemaTypeDefinition],
-    discussion: [{
-        userId: Number,
-        message: String,
-        timestamp: Date
-    }]
-})
+export function connectMongoose() {
+    mongoose.connect("mongodb://localhost:27017/EventoCerto?writeConcern=majority");
+}
 
-export const UserCol = mongoose.model("user", userSchema);
-export const EventCol = mongoose.model("event", eventSchema);
+
 
